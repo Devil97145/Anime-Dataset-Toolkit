@@ -1,0 +1,12 @@
+gradio>=4.0
+opencv-python
+torch
+onnxruntime
+pillow
+tqdm
+pandas
+numpy
+beautifulsoup4
+lxml
+requests
+aria2p  # 如果使用 aria2 RPC 模式（当前未启用，可选）
