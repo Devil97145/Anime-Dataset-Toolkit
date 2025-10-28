@@ -4,14 +4,20 @@ import os
 import tempfile
 from functions.video_extractor import VideoFrameExtractor
 
-def process_video_folder(input_dir, output_dir, frame_interval, max_threads):
+def process_video_folder(input_dir, output_dir, frame_interval, max_threads, hw_accel):
     try:
         if not input_dir or not os.path.isdir(input_dir):
             return "❌ 请选择有效的输入文件夹", None
         if not output_dir:
             return "❌ 请指定输出目录", None
         os.makedirs(output_dir, exist_ok=True)
-        extractor = VideoFrameExtractor(input_dir, output_dir, int(frame_interval), int(max_threads))
+        use_gpu = (hw_accel == "GPU (NVIDIA CUDA)")
+        extractor = VideoFrameExtractor(
+            input_dir, output_dir,
+            frame_interval=int(frame_interval),
+            max_threads=int(max_threads),
+            use_gpu=use_gpu
+        )
         extractor.start()
         success = extractor.processed_videos - extractor.failed_videos
         return (
@@ -21,7 +27,7 @@ def process_video_folder(input_dir, output_dir, frame_interval, max_threads):
     except Exception as e:
         return f"❌ 处理失败: {str(e)}", None
 
-def process_single_video(video_file, frame_interval, output_dir=None):
+def process_single_video(video_file, frame_interval, output_dir=None, hw_accel="CPU"):
     try:
         if not video_file:
             return "❌ 请选择视频文件", None, None
@@ -31,7 +37,12 @@ def process_single_video(video_file, frame_interval, output_dir=None):
         else:
             os.makedirs(output_dir, exist_ok=True)
             is_temp = False
-        actual_frames = VideoFrameExtractor.extract_single_video(video_file, output_dir, int(frame_interval))
+        use_gpu = (hw_accel == "GPU (NVIDIA CUDA)")
+        actual_frames = VideoFrameExtractor.extract_single_video(
+            video_file.name, output_dir,
+            frame_interval=int(frame_interval),
+            use_gpu=use_gpu
+        )
         frame_files = [os.path.join(output_dir, f) for f in os.listdir(output_dir) if f.startswith("frame_") and f.endswith(".jpg")]
         frame_files.sort()
         temp_hint = "（临时目录，建议手动保存）" if is_temp else ""
@@ -54,13 +65,18 @@ def create_video_tab():
                         output_dir_batch = gr.Textbox(label="📁 输出文件夹")
                         frame_interval_batch = gr.Number(label="⏱️ 帧间隔", value=90, precision=0)
                         max_threads_batch = gr.Number(label="🧵 最大线程数", value=4, precision=0)
+                        hw_accel_batch = gr.Radio(
+                            choices=["CPU", "GPU (NVIDIA CUDA)"],
+                            value="CPU",
+                            label="🖥️ 硬件加速"
+                        )
                         process_btn_batch = gr.Button("🚀 开始批量处理", variant="primary")
                     with gr.Column():
                         output_text_batch = gr.Textbox(label="📊 处理结果", lines=5)
                         output_dir_link = gr.Textbox(label="📂 输出目录", interactive=False)
                 process_btn_batch.click(
                     fn=process_video_folder,
-                    inputs=[input_dir_batch, output_dir_batch, frame_interval_batch, max_threads_batch],
+                    inputs=[input_dir_batch, output_dir_batch, frame_interval_batch, max_threads_batch, hw_accel_batch],
                     outputs=[output_text_batch, output_dir_link]
                 )
             with gr.TabItem("📽️ 单视频处理"):
@@ -69,14 +85,25 @@ def create_video_tab():
                         video_file = gr.File(label="📂 选择视频文件", file_types=["video"])
                         output_dir_single = gr.Textbox(label="📁 自定义输出目录（可选）")
                         frame_interval_single = gr.Number(label="⏱️ 帧间隔", value=90, precision=0)
+                        hw_accel_single = gr.Radio(
+                            choices=["CPU", "GPU (NVIDIA CUDA)"],
+                            value="CPU",
+                            label="🖥️ 硬件加速"
+                        )
                         process_btn_single = gr.Button("▶️ 开始处理", variant="primary")
                     with gr.Column():
                         output_text_single = gr.Textbox(label="📊 处理结果", lines=3)
                         gallery = gr.Gallery(label="🖼️ 提取的帧预览", columns=4, height=400)
                 process_btn_single.click(
                     fn=process_single_video,
-                    inputs=[video_file, frame_interval_single, output_dir_single],
+                    inputs=[video_file, frame_interval_single, output_dir_single, hw_accel_single],
                     outputs=[output_text_single, gallery, gr.State()]
                 )
         with gr.Accordion("📘 使用说明", open=False):
-            gr.Markdown("（保留你的说明）")
+            gr.Markdown("""
+            - **帧间隔**：每 N 帧提取一帧（如 90 表示每 90 帧取 1 帧）
+            - **硬件加速**：
+              - 选择 **GPU (NVIDIA CUDA)** 可显著加速处理（需安装支持 CUDA 的 FFmpeg）
+              - 若无 NVIDIA 显卡或驱动不兼容，请使用 **CPU**
+            - 单视频处理默认使用临时目录，建议手动保存结果
+            """)

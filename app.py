@@ -22,7 +22,7 @@ def create_app():
             create_filtering_tab()
             create_editor_tab()
             create_mikan_tab()
-            create_op_ed_tab()
+            #create_op_ed_tab()
 
         gr.Markdown("---\n## 💡 使用指南\n by Devilworld\n")
     
@@ -34,6 +34,6 @@ if __name__ == "__main__":
         server_name="127.0.0.1",
         server_port=7860,
         inbrowser=True,
-        allowed_paths=["F:\动漫数据集工作箱"]
+        allowed_paths=[r"F:\动漫数据集工作箱"]
        
     )

@@ -1,85 +1,104 @@
-# functions/op_ed_detector.py
-
-import os
+# core/op_ed_detector.py
 import cv2
 import numpy as np
 from pathlib import Path
-from .video_extractor import VideoFrameExtractor
+from typing import Tuple, Optional, Dict, Any
+import logging
 
-def compute_frame_hash(frame, hash_size=16):
-    """计算帧的感知哈希（pHash）"""
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    resized = cv2.resize(gray, (hash_size + 1, hash_size))
-    diff = resized[:, 1:] > resized[:, :-1]
-    return diff.flatten()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-def frames_to_hashes(video_path, frame_interval=15):
-    """提取视频关键帧并计算哈希"""
+def _extract_frame_at(video_path: str, time_sec: float) -> Optional[np.ndarray]:
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
-        raise ValueError(f"无法打开视频: {video_path}")
-    
+        return None
     fps = cap.get(cv2.CAP_PROP_FPS)
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    hashes = []
-    frame_indices = []
-
-    for i in range(0, total_frames, frame_interval):
-        cap.set(cv2.CAP_PROP_POS_FRAMES, i)
-        ret, frame = cap.read()
-        if not ret:
-            break
-        h = compute_frame_hash(frame)
-        hashes.append(h)
-        frame_indices.append(i)
-
+    frame_num = int(time_sec * fps)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
+    ret, frame = cap.read()
     cap.release()
-    return np.array(hashes), frame_indices, fps
+    return frame if ret else None
 
-def hamming_distance(hash1, hash2):
-    return np.sum(hash1 != hash2)
+def _compute_frame_similarity(frame1: np.ndarray, frame2: np.ndarray) -> float:
+    if frame1 is None or frame2 is None:
+        return 0.0
+    # Resize to small size for speed
+    h, w = frame1.shape[:2]
+    small1 = cv2.resize(frame1, (w // 8, h // 8))
+    small2 = cv2.resize(frame2, (w // 8, h // 8))
+    diff = cv2.absdiff(small1, small2)
+    return 1.0 - np.mean(diff) / 255.0
 
-def find_similar_segments(
-    main_video,
-    ref_video,
-    frame_interval=15,
-    max_hamming=10,
-    min_consecutive=3
-):
-    """
-    在 main_video 中查找与 ref_video 相似的片段
-    返回 [(start_frame, end_frame), ...]
-    """
-    print(f"[OP/ED] 正在分析参考视频: {os.path.basename(ref_video)}")
-    ref_hashes, _, _ = frames_to_hashes(ref_video, frame_interval)
-    
-    print(f"[OP/ED] 正在扫描主视频: {os.path.basename(main_video)}")
-    main_hashes, main_indices, fps = frames_to_hashes(main_video, frame_interval)
-    
-    matches = []
-    i = 0
-    while i < len(main_hashes):
-        # 找到第一个匹配帧
-        dists = [hamming_distance(main_hashes[i], rh) for rh in ref_hashes]
-        if min(dists) <= max_hamming:
-            start_i = i
-            count = 0
-            # 统计连续匹配帧数
-            while i < len(main_hashes) and count < len(ref_hashes):
-                dists = [hamming_distance(main_hashes[i], rh) for rh in ref_hashes]
-                if min(dists) <= max_hamming:
-                    count += 1
-                    i += 1
-                else:
-                    break
-            if count >= min_consecutive:
-                start_frame = main_indices[start_i]
-                end_frame = main_indices[i - 1] if i - 1 < len(main_indices) else main_indices[-1]
-                matches.append((start_frame, end_frame))
-                print(f"  ✅ 找到匹配片段: {start_frame} ~ {end_frame} 帧")
-            else:
-                i += 1
-        else:
-            i += 1
+def _detect_op(video_path: str, max_duration: int, threshold: float) -> Tuple[float, float]:
+    """返回 (start, end) in seconds"""
+    logger.info("Detecting OP...")
+    start_frame = _extract_frame_at(video_path, 1.0)  # 第1秒作为参考
+    if start_frame is None:
+        return (0.0, 0.0)
 
-    return matches, fps
+    for t in range(5, max_duration + 1, 2):  # 从5秒开始检测，避免静音黑屏
+        frame = _extract_frame_at(video_path, float(t))
+        if frame is None:
+            break
+        sim = _compute_frame_similarity(start_frame, frame)
+        if sim < threshold:
+            return (0.0, float(t))
+    return (0.0, float(max_duration))
+
+def _detect_ed(video_path: str, max_duration: int, threshold: float) -> Tuple[float, float]:
+    """返回 (start, end) in seconds"""
+    logger.info("Detecting ED...")
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        return (0.0, 0.0)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    total_sec = total_frames / fps
+    cap.release()
+
+    end_frame = _extract_frame_at(video_path, total_sec - 1.0)
+    if end_frame is None:
+        return (total_sec, total_sec)
+
+    for offset in range(5, min(max_duration, int(total_sec)) + 1, 2):
+        t = total_sec - offset
+        if t < 0:
+            break
+        frame = _extract_frame_at(video_path, t)
+        if frame is None:
+            continue
+        sim = _compute_frame_similarity(end_frame, frame)
+        if sim < threshold:
+            return (t, total_sec)
+    return (max(0.0, total_sec - max_duration), total_sec)
+
+def detect_op_ed(
+    video_path: str,
+    max_op_duration: int = 90,
+    max_ed_duration: int = 90,
+    threshold: float = 0.75
+) -> Dict[str, Any]:
+    if not video_path or not Path(video_path).exists():
+        return {"error": "视频文件不存在"}
+
+    try:
+        op_start, op_end = _detect_op(video_path, max_op_duration, threshold)
+        ed_start, ed_end = _detect_ed(video_path, max_ed_duration, threshold)
+
+        result = {
+            "OP": {
+                "start_seconds": round(op_start, 2),
+                "end_seconds": round(op_end, 2),
+                "duration_seconds": round(op_end - op_start, 2)
+            },
+            "ED": {
+                "start_seconds": round(ed_start, 2),
+                "end_seconds": round(ed_end, 2),
+                "duration_seconds": round(ed_end - ed_start, 2)
+            }
+        }
+        logger.info(f"Detection result: {result}")
+        return result
+    except Exception as e:
+        logger.exception("Detection failed")
+        return {"error": str(e)}
