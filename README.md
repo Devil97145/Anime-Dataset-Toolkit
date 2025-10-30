@@ -12,6 +12,7 @@
 ### 🛠️ 安装依赖
 ```bash
 git clone https://github.com/Devil97145/Anime-Dataset-Toolkit.git
+cd Anime-Dataset-Toolkit
 pip install -r requirements.txt
 
 ⚙️ 系统要求
