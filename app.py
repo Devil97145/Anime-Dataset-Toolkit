@@ -8,6 +8,7 @@ from utils.ffmpeg_checker import check_ffmpeg
 from ui.op_ed_ui import create_op_ed_tab
 from ui.mikan_ui import create_mikan_tab
 from ui.vl_caption_ui import create_vl_caption_tab
+from ui.asr_caption_ui import create_asr_caption_tab
 import os
 import logging
 
@@ -38,6 +39,7 @@ def create_app():
             create_mikan_tab()
             create_op_ed_tab()
             create_vl_caption_tab()
+            create_asr_caption_tab()
         gr.Markdown("---\n## 💡 使用指南\n by Devilworld\n")
     
     return demo
