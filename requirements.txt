@@ -9,4 +9,7 @@ numpy
 beautifulsoup4
 lxml
 requests
+huggingface_hub
+dashscope
+imagehash
 aria2p  # 如果使用 aria2 RPC 模式（当前未启用，可选）

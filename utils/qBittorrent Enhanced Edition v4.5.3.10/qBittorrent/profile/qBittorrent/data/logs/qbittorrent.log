@@ -1,0 +1,145 @@
+(N) 2023-05-31T18:58:10 - qBittorrent v4.5.3.10 started
+(N) 2023-05-31T18:58:10 - Running in portable mode. Auto detected profile folder at: C:\Users\x\Desktop\qBittorrent\profile
+(N) 2023-05-31T18:58:14 - Trying to listen on the following list of IP addresses: "0.0.0.0:62128,[::]:62128"
+(I) 2023-05-31T18:58:14 - Peer ID: "-qB453A-"
+(I) 2023-05-31T18:58:14 - HTTP User-Agent: "qBittorrent Enhanced/4.5.3.10"
+(I) 2023-05-31T18:58:14 - Distributed Hash Table (DHT) support: ON
+(I) 2023-05-31T18:58:14 - Local Peer Discovery support: ON
+(I) 2023-05-31T18:58:14 - Peer Exchange (PeX) support: ON
+(I) 2023-05-31T18:58:14 - Anonymous mode: OFF
+(I) 2023-05-31T18:58:14 - Encryption support: ON
+(N) 2023-05-31T18:58:14 - 'peer_blacklist.txt' doesn't exist. The corresponding filter is disabled.
+(N) 2023-05-31T18:58:14 - 'peer_whitelist.txt' doesn't exist. The corresponding filter is disabled.
+(I) 2023-05-31T18:58:14 - UPnP/NAT-PMP support: ON
+(I) 2023-05-31T18:58:14 - Successfully listening on IP. IP: "192.168.0.100". Port: "TCP/62128"
+(I) 2023-05-31T18:58:14 - Successfully listening on IP. IP: "192.168.0.100". Port: "UDP/62128"
+(I) 2023-05-31T18:58:14 - Successfully listening on IP. IP: "127.0.0.1". Port: "TCP/62128"
+(I) 2023-05-31T18:58:14 - Successfully listening on IP. IP: "127.0.0.1". Port: "UDP/62128"
+(I) 2023-05-31T18:58:14 - Successfully listening on IP. IP: "fe80::c735:cb77:6224:df9f%4". Port: "TCP/62128"
+(I) 2023-05-31T18:58:14 - Successfully listening on IP. IP: "fe80::c735:cb77:6224:df9f%4". Port: "UDP/62128"
+(I) 2023-05-31T18:58:14 - Successfully listening on IP. IP: "::1". Port: "TCP/62128"
+(I) 2023-05-31T18:58:14 - Successfully listening on IP. IP: "::1". Port: "UDP/62128"
+(W) 2023-05-31T18:58:14 - Couldn't load IP geolocation database. Reason: 系统找不到指定的路径。
+(I) 2023-05-31T18:58:15 - UPnP/NAT-PMP port mapping succeeded. Message: "successfully mapped port using UPnP. external port: TCP/62128"
+(I) 2023-05-31T18:58:15 - UPnP/NAT-PMP port mapping succeeded. Message: "successfully mapped port using UPnP. external port: UDP/47935"
+(I) 2023-05-31T18:58:15 - Detected external IP. IP: "36.251.132.160"
+(I) 2023-05-31T18:58:19 - IP geolocation database loaded. Type: DBIP-Country-Lite. Build time: 周一 5月 1 08:23:20 2023.
+(I) 2023-05-31T18:58:20 - Successfully updated IP geolocation database.
+(N) 2023-05-31T18:59:06 - qBittorrent termination initiated
+(I) 2023-05-31T18:59:06 - UPnP/NAT-PMP support: OFF
+(N) 2023-05-31T18:59:07 - qBittorrent is now ready to exit
+(N) 2023-05-31T18:59:08 - qBittorrent v4.5.3.10 started
+(N) 2023-05-31T18:59:08 - Running in portable mode. Auto detected profile folder at: C:\Users\x\Desktop\qBittorrent\profile
+(N) 2023-05-31T18:59:08 - Trying to listen on the following list of IP addresses: "0.0.0.0:62128,[::]:62128"
+(I) 2023-05-31T18:59:08 - Peer ID: "-qB453A-"
+(I) 2023-05-31T18:59:08 - HTTP User-Agent: "qBittorrent Enhanced/4.5.3.10"
+(I) 2023-05-31T18:59:08 - Distributed Hash Table (DHT) support: ON
+(I) 2023-05-31T18:59:08 - Local Peer Discovery support: ON
+(I) 2023-05-31T18:59:08 - Peer Exchange (PeX) support: ON
+(I) 2023-05-31T18:59:08 - Anonymous mode: OFF
+(I) 2023-05-31T18:59:08 - Encryption support: ON
+(N) 2023-05-31T18:59:08 - 'peer_blacklist.txt' doesn't exist. The corresponding filter is disabled.
+(N) 2023-05-31T18:59:08 - 'peer_whitelist.txt' doesn't exist. The corresponding filter is disabled.
+(I) 2023-05-31T18:59:08 - UPnP/NAT-PMP support: ON
+(I) 2023-05-31T18:59:08 - Successfully listening on IP. IP: "192.168.0.100". Port: "TCP/62128"
+(I) 2023-05-31T18:59:08 - Successfully listening on IP. IP: "192.168.0.100". Port: "UDP/62128"
+(I) 2023-05-31T18:59:08 - Successfully listening on IP. IP: "127.0.0.1". Port: "TCP/62128"
+(I) 2023-05-31T18:59:08 - Successfully listening on IP. IP: "127.0.0.1". Port: "UDP/62128"
+(I) 2023-05-31T18:59:08 - Successfully listening on IP. IP: "fe80::c735:cb77:6224:df9f%4". Port: "TCP/62128"
+(I) 2023-05-31T18:59:08 - Successfully listening on IP. IP: "fe80::c735:cb77:6224:df9f%4". Port: "UDP/62128"
+(I) 2023-05-31T18:59:08 - Successfully listening on IP. IP: "::1". Port: "TCP/62128"
+(I) 2023-05-31T18:59:08 - Successfully listening on IP. IP: "::1". Port: "UDP/62128"
+(I) 2023-05-31T18:59:08 - IP geolocation database loaded. Type: DBIP-Country-Lite. Build time: 周一 5月 1 08:23:20 2023.
+(I) 2023-05-31T18:59:08 - UPnP/NAT-PMP port mapping succeeded. Message: "successfully mapped port using UPnP. external port: TCP/62128"
+(I) 2023-05-31T18:59:08 - UPnP/NAT-PMP port mapping succeeded. Message: "successfully mapped port using UPnP. external port: UDP/41303"
+(N) 2023-05-31T18:59:35 - 已儲存選項。
+(N) 2023-05-31T18:59:42 - qBittorrent 中止操作
+(I) 2023-05-31T18:59:42 - UPnP/NAT-PMP 支援：關閉
+(N) 2023-05-31T18:59:42 - qBittorrent 已準備好關閉
+(N) 2023-05-31T18:59:43 - 已啟動qBittorrent v4.5.3.10
+(N) 2023-05-31T18:59:43 - 正以可攜模式執行。自動偵測到的設定檔資料夾位於：C:\Users\x\Desktop\qBittorrent\profile
+(N) 2023-05-31T18:59:43 - 正在嘗試監聽以下 IP 位址清單：「0.0.0.0:62128,[::]:62128」
+(I) 2023-05-31T18:59:43 - Peer ID：「-qB453A-」
+(I) 2023-05-31T18:59:43 - HTTP 使用者代理：「qBittorrent Enhanced/4.5.3.10」
+(I) 2023-05-31T18:59:43 - 分散式雜湊表 (DHT) 支援：開啟
+(I) 2023-05-31T18:59:43 - 區域 Peer 搜尋支援：開啟
+(I) 2023-05-31T18:59:43 - Peer 交換 (PeX) 支援：開啟
+(I) 2023-05-31T18:59:43 - 匿名模式：關閉
+(I) 2023-05-31T18:59:43 - 加密支援：開啟
+(N) 2023-05-31T18:59:43 - 'peer_blacklist.txt' doesn't exist. The corresponding filter is disabled.
+(N) 2023-05-31T18:59:43 - 'peer_whitelist.txt' doesn't exist. The corresponding filter is disabled.
+(I) 2023-05-31T18:59:43 - UPnP/NAT-PMP 支援：開啟
+(I) 2023-05-31T18:59:43 - 成功監聽 IP。IP：「192.168.0.100」。通訊埠：「TCP/62128」
+(I) 2023-05-31T18:59:43 - 成功監聽 IP。IP：「192.168.0.100」。通訊埠：「UDP/62128」
+(I) 2023-05-31T18:59:43 - 成功監聽 IP。IP：「127.0.0.1」。通訊埠：「TCP/62128」
+(I) 2023-05-31T18:59:43 - 成功監聽 IP。IP：「127.0.0.1」。通訊埠：「UDP/62128」
+(I) 2023-05-31T18:59:43 - 成功監聽 IP。IP：「fe80::c735:cb77:6224:df9f%4」。通訊埠：「TCP/62128」
+(I) 2023-05-31T18:59:43 - 成功監聽 IP。IP：「fe80::c735:cb77:6224:df9f%4」。通訊埠：「UDP/62128」
+(I) 2023-05-31T18:59:43 - 成功監聽 IP。IP：「::1」。通訊埠：「TCP/62128」
+(I) 2023-05-31T18:59:43 - 成功監聽 IP。IP：「::1」。通訊埠：「UDP/62128」
+(I) 2023-05-31T18:59:43 - IP 地理位置資料庫已載入。類型：DBIP-Country-Lite。建構日期：周一 5月 1 08:23:20 2023。
+(I) 2023-05-31T18:59:44 - UPnP/NAT-PMP 通訊埠映射成功。訊息：「successfully mapped port using UPnP. external port: TCP/62128」
+(I) 2023-05-31T18:59:44 - UPnP/NAT-PMP 通訊埠映射成功。訊息：「successfully mapped port using UPnP. external port: UDP/46355」
+(I) 2023-05-31T18:59:44 - 偵測到外部 IP。IP：「36.251.132.160」
+(N) 2023-05-31T19:00:13 - 已保存选项
+(N) 2023-05-31T19:00:19 - 发起了 qBittorrent 终止操作
+(I) 2023-05-31T19:00:19 - UPnP/NAT-PMP 支持：关
+(N) 2023-05-31T19:00:19 - qBittorrent 现在准备好退出了
+(N) 2023-05-31T19:00:21 - qBittorrent v4.5.3.10 已启动
+(N) 2023-05-31T19:00:21 - 当前运行在便携模式下。自动检测配置文件夹于：C:\Users\x\Desktop\qBittorrent\profile
+(N) 2023-05-31T19:00:21 - 尝试侦听下列 IP 地址列表：“0.0.0.0:62128,[::]:62128”
+(I) 2023-05-31T19:00:21 - Peer ID：“-qB453A-”
+(I) 2023-05-31T19:00:21 - HTTP User-Agent：“qBittorrent Enhanced/4.5.3.10”
+(I) 2023-05-31T19:00:21 - 分布式哈希表（DHT）支持：开
+(I) 2023-05-31T19:00:21 - 本地 Peer 发现支持：开
+(I) 2023-05-31T19:00:21 - Peer 交换（PeX）支持：开
+(I) 2023-05-31T19:00:21 - 匿名模式：关
+(I) 2023-05-31T19:00:21 - 加密支持：开
+(N) 2023-05-31T19:00:21 - 'peer_blacklist.txt' doesn't exist. The corresponding filter is disabled.
+(N) 2023-05-31T19:00:21 - 'peer_whitelist.txt' doesn't exist. The corresponding filter is disabled.
+(I) 2023-05-31T19:00:21 - UPnP/NAT-PMP 支持：开
+(I) 2023-05-31T19:00:21 - 成功监听 IP。IP：“192.168.0.100”。端口："TCP/62128"
+(I) 2023-05-31T19:00:21 - 成功监听 IP。IP：“192.168.0.100”。端口："UDP/62128"
+(I) 2023-05-31T19:00:21 - 成功监听 IP。IP：“127.0.0.1”。端口："TCP/62128"
+(I) 2023-05-31T19:00:21 - 成功监听 IP。IP：“127.0.0.1”。端口："UDP/62128"
+(I) 2023-05-31T19:00:21 - 成功监听 IP。IP：“fe80::c735:cb77:6224:df9f%4”。端口："TCP/62128"
+(I) 2023-05-31T19:00:21 - 成功监听 IP。IP：“fe80::c735:cb77:6224:df9f%4”。端口："UDP/62128"
+(I) 2023-05-31T19:00:21 - 成功监听 IP。IP：“::1”。端口："TCP/62128"
+(I) 2023-05-31T19:00:21 - 成功监听 IP。IP：“::1”。端口："UDP/62128"
+(I) 2023-05-31T19:00:21 - IP 地理数据库已加载。类型：DBIP-Country-Lite。构建时间：周一 5月 1 08:23:20 2023。
+(I) 2023-05-31T19:00:21 - UPnP/NAT-PMP 端口映射成功。消息：“successfully mapped port using UPnP. external port: TCP/62128”
+(I) 2023-05-31T19:00:21 - UPnP/NAT-PMP 端口映射成功。消息：“successfully mapped port using UPnP. external port: UDP/41200”
+(I) 2023-05-31T19:00:21 - 检测到外部 IP。IP：“36.251.132.160”
+(N) 2023-05-31T19:00:40 - 发起了 qBittorrent 终止操作
+(I) 2023-05-31T19:00:41 - UPnP/NAT-PMP 支持：关
+(N) 2023-05-31T19:00:41 - qBittorrent 现在准备好退出了
+(N) 2023-05-31T19:00:42 - qBittorrent v4.5.3.10 已启动
+(N) 2023-05-31T19:00:42 - 当前运行在便携模式下。自动检测配置文件夹于：C:\Users\x\Desktop\qBittorrent\profile
+(N) 2023-05-31T19:00:42 - 尝试侦听下列 IP 地址列表：“0.0.0.0:62128,[::]:62128”
+(I) 2023-05-31T19:00:42 - Peer ID：“-qB453A-”
+(I) 2023-05-31T19:00:42 - HTTP User-Agent：“qBittorrent Enhanced/4.5.3.10”
+(I) 2023-05-31T19:00:42 - 分布式哈希表（DHT）支持：开
+(I) 2023-05-31T19:00:42 - 本地 Peer 发现支持：开
+(I) 2023-05-31T19:00:42 - Peer 交换（PeX）支持：开
+(I) 2023-05-31T19:00:42 - 匿名模式：关
+(I) 2023-05-31T19:00:42 - 加密支持：开
+(N) 2023-05-31T19:00:42 - 'peer_blacklist.txt' doesn't exist. The corresponding filter is disabled.
+(N) 2023-05-31T19:00:42 - 'peer_whitelist.txt' doesn't exist. The corresponding filter is disabled.
+(I) 2023-05-31T19:00:42 - UPnP/NAT-PMP 支持：开
+(I) 2023-05-31T19:00:42 - 成功监听 IP。IP：“192.168.0.100”。端口："TCP/62128"
+(I) 2023-05-31T19:00:42 - 成功监听 IP。IP：“192.168.0.100”。端口："UDP/62128"
+(I) 2023-05-31T19:00:42 - 成功监听 IP。IP：“127.0.0.1”。端口："TCP/62128"
+(I) 2023-05-31T19:00:42 - 成功监听 IP。IP：“127.0.0.1”。端口："UDP/62128"
+(I) 2023-05-31T19:00:42 - 成功监听 IP。IP：“fe80::c735:cb77:6224:df9f%4”。端口："TCP/62128"
+(I) 2023-05-31T19:00:42 - 成功监听 IP。IP：“fe80::c735:cb77:6224:df9f%4”。端口："UDP/62128"
+(I) 2023-05-31T19:00:42 - 成功监听 IP。IP：“::1”。端口："TCP/62128"
+(I) 2023-05-31T19:00:42 - 成功监听 IP。IP：“::1”。端口："UDP/62128"
+(I) 2023-05-31T19:00:42 - IP 地理数据库已加载。类型：DBIP-Country-Lite。构建时间：周一 5月 1 08:23:20 2023。
+(I) 2023-05-31T19:00:43 - UPnP/NAT-PMP 端口映射成功。消息：“successfully mapped port using UPnP. external port: TCP/62128”
+(I) 2023-05-31T19:00:43 - UPnP/NAT-PMP 端口映射成功。消息：“successfully mapped port using UPnP. external port: UDP/47154”
+(I) 2023-05-31T19:00:43 - 检测到外部 IP。IP：“36.251.132.160”
+(N) 2023-05-31T19:03:18 - 已保存选项
+(I) 2023-05-31T19:03:18 - The public tracker list updated.
+(N) 2023-05-31T19:04:22 - 发起了 qBittorrent 终止操作
+(I) 2023-05-31T19:04:22 - UPnP/NAT-PMP 支持：关
+(N) 2023-05-31T19:04:22 - qBittorrent 现在准备好退出了
