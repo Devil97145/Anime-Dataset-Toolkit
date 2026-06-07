@@ -2,6 +2,7 @@
 
 import csv
 import os
+import requests
 from pathlib import Path
 import sys
 import cv2
@@ -21,32 +22,44 @@ WD_TAGGER_MODELS = {
     "wd-vit-tagger-v3": {
         "path": "G:/工具箱/wd-vit-tagger-v3",
         "description": "通用图像打标（推荐）",
-        "version": "v3"
+        "version": "v3",
+        "hf_model_id": "SmilingWolf/wd-vit-tagger-v3",
+        "files": ["model.onnx", "selected_tags.csv"]
     },
     "wd-swinv2-tagger-v3": {
         "path": "G:/工具箱/wd-swinv2-tagger-v3",
         "description": "SwinV2 模型，更精确但更慢",
-        "version": "v3"
+        "version": "v3",
+        "hf_model_id": "SmilingWolf/wd-swinv2-tagger-v3",
+        "files": ["model.onnx", "selected_tags.csv"]
     },
     "wd-ovit-tagger-v3": {
         "path": "G:/工具箱/wd-ovit-tagger-v3",
         "description": "OViT 模型，平衡速度和精度",
-        "version": "v3"
+        "version": "v3",
+        "hf_model_id": "SmilingWolf/wd-ovit-tagger-v3",
+        "files": ["model.onnx", "selected_tags.csv"]
     },
     "wd-vit-tagger-v2": {
         "path": "G:/工具箱/wd-vit-tagger-v2",
         "description": "旧版 ViT 模型",
-        "version": "v2"
+        "version": "v2",
+        "hf_model_id": "SmilingWolf/wd-vit-tagger-v2",
+        "files": ["model.onnx", "selected_tags.csv"]
     },
     "wd-convnext-tagger-v3": {
         "path": "G:/工具箱/wd-convnext-tagger-v3",
         "description": "ConvNeXt 模型，适合复杂场景",
-        "version": "v3"
+        "version": "v3",
+        "hf_model_id": "SmilingWolf/wd-convnext-tagger-v3",
+        "files": ["model.onnx", "selected_tags.csv"]
     },
     "custom": {
         "path": "",
         "description": "自定义模型路径",
-        "version": "custom"
+        "version": "custom",
+        "hf_model_id": None,
+        "files": []
     }
 }
 
@@ -55,6 +68,9 @@ DEFAULT_MODEL_KEY = "wd-vit-tagger-v3"
 
 # 模型缓存
 _model_cache = {}
+
+# 默认下载目录
+DEFAULT_DOWNLOAD_DIR = "G:/工具箱"
 
 # 临时添加当前路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -71,6 +87,8 @@ except ImportError:
         def info(msg): print(f"[INFO] {msg}", flush=True)
         @staticmethod
         def error(msg): print(f"[ERROR] {msg}", flush=True)
+        @staticmethod
+        def warning(msg): print(f"[WARNING] {msg}", flush=True)
     logger = DummyLogger()
 
     def glob_images_pathlib(dir_path, recursive):
@@ -303,11 +321,136 @@ def collate_fn_remove_corrupted(batch):
 
 
 # ======================
+# 模型下载功能
+# ======================
+
+def get_model_file_url(hf_model_id, filename):
+    """获取 Hugging Face 模型文件的直接下载 URL"""
+    return f"https://huggingface.co/{hf_model_id}/resolve/main/{filename}"
+
+
+def download_file(url, dest_path, desc=""):
+    """下载文件并显示进度"""
+    try:
+        response = requests.get(url, stream=True, timeout=60)
+        response.raise_for_status()
+        
+        total_size = int(response.headers.get('content-length', 0))
+        
+        with open(dest_path, 'wb') as f:
+            with tqdm(total=total_size, unit='B', unit_scale=True, 
+                     desc=desc or os.path.basename(dest_path)) as pbar:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+                        pbar.update(len(chunk))
+        
+        return True
+    except Exception as e:
+        logger.error(f"下载失败: {e}")
+        return False
+
+
+def check_model_exists(model_key, custom_path=None):
+    """检查模型是否已存在"""
+    if model_key == "custom":
+        return os.path.exists(custom_path) if custom_path else False
+    
+    model_config = WD_TAGGER_MODELS.get(model_key)
+    if not model_config:
+        return False
+    
+    model_path = model_config["path"]
+    
+    # 检查必需的文件是否存在
+    for filename in model_config.get("files", ["model.onnx", "selected_tags.csv"]):
+        file_path = os.path.join(model_path, filename)
+        if not os.path.exists(file_path):
+            return False
+    
+    return True
+
+
+def download_model(model_key, download_dir=None, custom_path=None, progress_callback=None):
+    """
+    下载模型到指定目录
+    
+    Args:
+        model_key: 模型标识符
+        download_dir: 下载目录（仅用于非 custom 模型）
+        custom_path: 自定义路径（仅用于 custom 模型）
+        progress_callback: 进度回调函数 callback(progress, message)
+    
+    Returns:
+        tuple: (success, message, model_path)
+    """
+    if model_key == "custom":
+        if not custom_path:
+            return False, "自定义路径不能为空", None
+        target_dir = custom_path
+        model_config = {"files": ["model.onnx", "selected_tags.csv"]}
+    else:
+        model_config = WD_TAGGER_MODELS.get(model_key)
+        if not model_config:
+            return False, f"未知模型: {model_key}", None
+        
+        if download_dir:
+            target_dir = os.path.join(download_dir, model_key)
+        else:
+            target_dir = model_config["path"]
+    
+    hf_model_id = model_config.get("hf_model_id")
+    files = model_config.get("files", [])
+    
+    if not hf_model_id or not files:
+        return False, "此模型不支持下载", None
+    
+    # 创建目标目录
+    os.makedirs(target_dir, exist_ok=True)
+    
+    # 下载每个文件
+    total_files = len(files)
+    for i, filename in enumerate(files):
+        dest_path = os.path.join(target_dir, filename)
+        
+        # 如果文件已存在，跳过
+        if os.path.exists(dest_path):
+            logger.info(f"文件已存在: {dest_path}")
+            if progress_callback:
+                progress_callback(
+                    int((i + 1) / total_files * 100),
+                    f"文件已存在，跳过: {filename}"
+                )
+            continue
+        
+        if progress_callback:
+            progress_callback(
+                int(i / total_files * 100),
+                f"正在下载 {filename}..."
+            )
+        
+        url = get_model_file_url(hf_model_id, filename)
+        logger.info(f"正在下载: {url}")
+        
+        success = download_file(url, dest_path, desc=filename)
+        if not success:
+            return False, f"下载 {filename} 失败", None
+        
+        if progress_callback:
+            progress_callback(
+                int((i + 1) / total_files * 100),
+                f"下载完成: {filename}"
+            )
+    
+    return True, f"模型下载完成: {model_key}", target_dir
+
+
+# ======================
 # 辅助函数
 # ======================
 
-def get_model_path(model_key, custom_path=None):
-    """获取模型路径"""
+def get_model_path(model_key, custom_path=None, auto_download=True, download_dir=None, progress_callback=None):
+    """获取模型路径，可选自动下载"""
     if model_key == "custom":
         if not custom_path or not os.path.exists(custom_path):
             raise ValueError("自定义模型路径无效或不存在")
@@ -318,8 +461,22 @@ def get_model_path(model_key, custom_path=None):
         raise ValueError(f"未知模型: {model_key}")
     
     model_path = model_config["path"]
-    if not os.path.exists(model_path):
-        raise ValueError(f"模型文件夹不存在: {model_path}")
+    
+    # 检查模型是否存在
+    if not check_model_exists(model_key):
+        if auto_download:
+            logger.info(f"模型不存在，正在下载: {model_key}")
+            success, msg, downloaded_path = download_model(
+                model_key, download_dir, None, progress_callback
+            )
+            if success:
+                # 更新配置中的路径
+                WD_TAGGER_MODELS[model_key]["path"] = downloaded_path
+                return downloaded_path
+            else:
+                raise ValueError(f"模型下载失败: {msg}")
+        else:
+            raise ValueError(f"模型文件夹不存在: {model_path}")
     
     return model_path
 
@@ -328,12 +485,34 @@ def get_available_models():
     """获取可用的模型列表"""
     available = []
     for key, config in WD_TAGGER_MODELS.items():
-        path = config["path"]
         if key == "custom":
             continue
-        if os.path.exists(path):
+        if check_model_exists(key):
             available.append(key)
     return available
+
+
+def get_model_status():
+    """获取所有模型的状态"""
+    status = {}
+    for key, config in WD_TAGGER_MODELS.items():
+        if key == "custom":
+            status[key] = {
+                "name": config["description"],
+                "installed": None,
+                "path": ""
+            }
+            continue
+        
+        model_path = config["path"]
+        installed = check_model_exists(key)
+        status[key] = {
+            "name": config["description"],
+            "installed": installed,
+            "path": model_path
+        }
+    
+    return status
 
 
 # ======================
@@ -358,7 +537,10 @@ def run_wd_tagger(
     batch_size=1,
     recursive=False,
     debug=False,
-    frequency_tags=False
+    frequency_tags=False,
+    auto_download=True,
+    download_dir=None,
+    progress_callback=None
 ):
     """
     使用 WD-ViT-TAGGER 模型为图像生成标签
@@ -366,6 +548,9 @@ def run_wd_tagger(
     Args:
         model_key: 模型标识符（如 "wd-vit-tagger-v3"）
         custom_model_path: 当 model_key="custom" 时的自定义路径
+        auto_download: 当模型不存在时是否自动下载
+        download_dir: 下载目录
+        progress_callback: 进度回调函数
     """
     if not os.path.exists(image_dir):
         return f"❌ 图片文件夹不存在：{image_dir}"
@@ -374,7 +559,12 @@ def run_wd_tagger(
     try:
         if model_key is None:
             model_key = DEFAULT_MODEL_KEY
-        model_path = get_model_path(model_key, custom_model_path)
+        model_path = get_model_path(
+            model_key, custom_model_path, 
+            auto_download=auto_download,
+            download_dir=download_dir,
+            progress_callback=progress_callback
+        )
     except ValueError as e:
         return f"❌ {str(e)}"
 
