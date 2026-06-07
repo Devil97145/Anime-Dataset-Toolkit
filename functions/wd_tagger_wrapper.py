@@ -12,8 +12,49 @@ from tqdm import tqdm
 import re
 import pandas as pd
 
-# 默认模型路径（请根据你的实际路径修改）
-DEFAULT_MODEL_PATH = "G:/工具箱/wd-vit-tagger-v3"
+# ======================
+# 模型配置
+# ======================
+
+# 可用打标模型列表
+WD_TAGGER_MODELS = {
+    "wd-vit-tagger-v3": {
+        "path": "G:/工具箱/wd-vit-tagger-v3",
+        "description": "通用图像打标（推荐）",
+        "version": "v3"
+    },
+    "wd-swinv2-tagger-v3": {
+        "path": "G:/工具箱/wd-swinv2-tagger-v3",
+        "description": "SwinV2 模型，更精确但更慢",
+        "version": "v3"
+    },
+    "wd-ovit-tagger-v3": {
+        "path": "G:/工具箱/wd-ovit-tagger-v3",
+        "description": "OViT 模型，平衡速度和精度",
+        "version": "v3"
+    },
+    "wd-vit-tagger-v2": {
+        "path": "G:/工具箱/wd-vit-tagger-v2",
+        "description": "旧版 ViT 模型",
+        "version": "v2"
+    },
+    "wd-convnext-tagger-v3": {
+        "path": "G:/工具箱/wd-convnext-tagger-v3",
+        "description": "ConvNeXt 模型，适合复杂场景",
+        "version": "v3"
+    },
+    "custom": {
+        "path": "",
+        "description": "自定义模型路径",
+        "version": "custom"
+    }
+}
+
+# 默认模型
+DEFAULT_MODEL_KEY = "wd-vit-tagger-v3"
+
+# 模型缓存
+_model_cache = {}
 
 # 临时添加当前路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -262,11 +303,47 @@ def collate_fn_remove_corrupted(batch):
 
 
 # ======================
-# 主打标函数（不再接收 model_path）
+# 辅助函数
+# ======================
+
+def get_model_path(model_key, custom_path=None):
+    """获取模型路径"""
+    if model_key == "custom":
+        if not custom_path or not os.path.exists(custom_path):
+            raise ValueError("自定义模型路径无效或不存在")
+        return custom_path
+    
+    model_config = WD_TAGGER_MODELS.get(model_key)
+    if not model_config:
+        raise ValueError(f"未知模型: {model_key}")
+    
+    model_path = model_config["path"]
+    if not os.path.exists(model_path):
+        raise ValueError(f"模型文件夹不存在: {model_path}")
+    
+    return model_path
+
+
+def get_available_models():
+    """获取可用的模型列表"""
+    available = []
+    for key, config in WD_TAGGER_MODELS.items():
+        path = config["path"]
+        if key == "custom":
+            continue
+        if os.path.exists(path):
+            available.append(key)
+    return available
+
+
+# ======================
+# 主打标函数
 # ======================
 
 def run_wd_tagger(
     image_dir,
+    model_key=None,
+    custom_model_path=None,
     general_threshold=0.35,
     character_threshold=0.35,
     caption_extension=".txt",
@@ -284,18 +361,30 @@ def run_wd_tagger(
     frequency_tags=False
 ):
     """
-    使用 WD-ViT-TAGGER-v3 (ONNX) 为图像生成标签
-    模型路径固定为 DEFAULT_MODEL_PATH
+    使用 WD-ViT-TAGGER 模型为图像生成标签
+    
+    Args:
+        model_key: 模型标识符（如 "wd-vit-tagger-v3"）
+        custom_model_path: 当 model_key="custom" 时的自定义路径
     """
     if not os.path.exists(image_dir):
         return f"❌ 图片文件夹不存在：{image_dir}"
     
-    model_path = DEFAULT_MODEL_PATH
-    if not os.path.exists(model_path):
-        return f"❌ 模型文件夹不存在：{model_path}"
+    # 获取模型路径
+    try:
+        if model_key is None:
+            model_key = DEFAULT_MODEL_KEY
+        model_path = get_model_path(model_key, custom_model_path)
+    except ValueError as e:
+        return f"❌ {str(e)}"
+
+    logger.info(f"使用模型: {model_key} @ {model_path}")
 
     try:
-        interrogator = WaifuDiffusionInterrogator('wd-vit-tagger-v3', model_location=model_path)
+        interrogator = WaifuDiffusionInterrogator(
+            f'wd-tagger-{model_key}',
+            model_location=model_path
+        )
         logger.info("模型加载成功！")
     except Exception as e:
         return f"❌ 模型加载失败：{str(e)}"
@@ -404,9 +493,10 @@ def run_wd_tagger(
 
     interrogator.unload()
 
+    model_name = model_key if model_key else DEFAULT_MODEL_KEY
     if frequency_tags:
         top20 = sorted(tag_freq.items(), key=lambda x: x[1], reverse=True)[:20]
         freq_info = "\n".join([f"{tag}: {freq}" for tag, freq in top20])
-        return f"✅ AI打标完成！共处理 {processed_count} 张图片。\n\n前20个高频标签：\n{freq_info}"
+        return f"✅ AI打标完成！\n📦 使用模型: {model_name}\n🖼️ 共处理 {processed_count} 张图片。\n\n前20个高频标签：\n{freq_info}"
     else:
-        return f"✅ AI打标完成！共处理 {processed_count} 张图片，标签文件已生成。"
+        return f"✅ AI打标完成！\n📦 使用模型: {model_name}\n🖼️ 共处理 {processed_count} 张图片，标签文件已生成。"
