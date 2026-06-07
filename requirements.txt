@@ -10,3 +10,4 @@ beautifulsoup4
 lxml
 requests
 aria2p  # 如果使用 aria2 RPC 模式（当前未启用，可选）
+transformers>=4.30.0  # NLP打标功能需要
